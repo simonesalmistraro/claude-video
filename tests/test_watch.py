@@ -155,6 +155,16 @@ def test_no_whisper_disables_configured_local_backend(monkeypatch):
     assert watch.main() == 0
 
 
+def test_default_work_dir_stays_inside_test_tmp(monkeypatch, capsys, tmp_path):
+    """Without --out-dir, watch.py's kept work dir must land in tmp_path, not the system /tmp."""
+    _mock_audio(monkeypatch)
+    monkeypatch.setattr(sys, 'argv', ['watch', 'video.mp4', '--detail', 'transcript', '--no-whisper'])
+    assert watch.main() == 0
+    work_dirs = list((tmp_path / 'tmp').glob('watch-*'))
+    assert len(work_dirs) == 1, work_dirs
+    assert str(work_dirs[0]) in capsys.readouterr().out
+
+
 def test_local_failure_does_not_resolve_cloud(monkeypatch, capsys):
     _mock_audio(monkeypatch)
     monkeypatch.setattr(watch, 'load_api_key', lambda *a: pytest.fail('no cloud fallback'))

@@ -4,6 +4,7 @@ from __future__ import annotations
 import subprocess
 import sys
 import os
+import tempfile
 from pathlib import Path
 
 import pytest
@@ -29,6 +30,14 @@ def isolated_user(monkeypatch, tmp_path):
     monkeypatch.setenv("USERPROFILE", str(home))
     monkeypatch.setenv("XDG_CONFIG_HOME", str(home / ".config"))
     monkeypatch.chdir(cwd)
+    # watch.py keeps its work dir for the agent to read, so a run without --out-dir
+    # would leave a watch-* folder in the system temp dir. Contain it in tmp_path:
+    # tempfile.tempdir for in-process runs, TMPDIR/TEMP/TMP for subprocesses.
+    scratch = tmp_path / "tmp"
+    scratch.mkdir()
+    monkeypatch.setattr(tempfile, "tempdir", str(scratch))
+    for name in ("TMPDIR", "TEMP", "TMP"):
+        monkeypatch.setenv(name, str(scratch))
     import config
     monkeypatch.setattr(config, "CONFIG_DIR", home / ".config" / "watch")
     monkeypatch.setattr(config, "CONFIG_FILE", config.CONFIG_DIR / ".env")
