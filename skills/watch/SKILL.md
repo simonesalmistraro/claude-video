@@ -153,6 +153,8 @@ Cloud fallbacks extract mono 16 kHz MP3 and upload within a conservative 24,000,
 
 For download failures, use the bounded original error and its diagnostic hint. A 403 has no generic fix, but first update yt-dlp with its owning package manager (e.g. `brew upgrade yt-dlp`, `pipx upgrade yt-dlp`) and retry once. Do not hardcode alternate clients, cycle cookies, or disable TLS verification. Preserve available captions when media/probing fails. For hosted environments, local uploads solve downloading only; cloud ASR and cold local-model setup still need permitted network access.
 
+**Sandboxed hosts block network by default.** A name-resolution error (`Temporary failure in name resolution`, `Failed to resolve`, `getaddrinfo failed`, `Errno -3`) on every URL, caption, Gemini, or cloud-ASR call means the host sandbox has no network, not that the video or service failed. Codex's `workspace-write` sandbox is offline unless `sandbox_workspace_write.network_access = true`, and its read-only sandbox cannot even create the work dir. Tell the user which setting blocks the run and offer the local file path as a workaround. Do not change sandbox or permission settings yourself, and do not retry with other clients or cookies.
+
 For follow-ups, reuse evidence already viewed before rerunning. Remove only the disposable **Work dir** created by this invocation when no longer needed. Never delete the parent supplied with `--out-dir`, a user source file, the local venv, or model caches as routine cleanup.
 
 ## Security and runtime access

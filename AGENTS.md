@@ -62,6 +62,15 @@ bash skills/watch/scripts/build-skill.sh   # → dist/watch.skill
 ./dev-sync.sh                       # --dry-run to preview
 ```
 
+### Testing local changes in each host
+
+The published install routes test what's on GitHub, not your working tree. Use these instead:
+
+- **Claude Code**: `claude --plugin-dir .`, or install with `claude plugin marketplace add <repo-path>`. A directory marketplace is read live from the repo; only GitHub installs need `dev-sync.sh`.
+- **Codex**: `codex plugin marketplace add .` still installs from the GitHub URL in `.agents/plugins/marketplace.json`. To test local changes, symlink `skills/watch` into `~/.codex/skills/watch`. Run `codex exec --sandbox workspace-write`; the default read-only sandbox can't create the work dir. Add `-c sandbox_workspace_write.network_access=true` to test URLs.
+- **OpenCode**: symlink `skills/watch` into `~/.config/opencode/skills/watch` (or a project's `.opencode/skills/watch`).
+- Headless runs (`claude -p`, `codex exec`, `opencode run`) give a quick end-to-end check on a short `ffmpeg -f lavfi -i testsrc=duration=4` clip with `--engine local --no-whisper --out-dir ./out`.
+
 ## Rules
 
 - Keep the version in sync across `skills/watch/SKILL.md` (`metadata.version`), `.claude-plugin/plugin.json`, and `.codex-plugin/plugin.json` when cutting a release.

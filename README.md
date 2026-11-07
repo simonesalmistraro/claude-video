@@ -74,6 +74,15 @@ The desktop Plugins directory and CLI `/plugins` browser also show configured ma
 
 </details>
 
+**Codex's sandbox and the network.** Watch needs network access for every URL, for captions, for the Gemini engine, and for cloud transcription. Codex's `workspace-write` sandbox has no network unless you allow it. Its read-only sandbox (the default for `codex exec`) can't write Watch's working folder. With the network blocked, local files still work, and URLs fail with `Temporary failure in name resolution`. To allow network access, add this to `~/.codex/config.toml`:
+
+```toml
+[sandbox_workspace_write]
+network_access = true
+```
+
+For a single run, pass `-c sandbox_workspace_write.network_access=true` instead.
+
 Continue with [your first video](#try-your-first-video).
 
 ### Claude Code in VS Code
@@ -126,6 +135,8 @@ npx skills add bradautomates/claude-video -g --skill watch
 Select your agent when prompted, follow the installer's reported destination, then restart the agent. Node/npm is needed for this installer, not for Watch's Python runtime.
 
 You can target an agent explicitly, for example `-a codex`, but Codex users can use the simpler [message-box installation](#codex). See the [Skills CLI documentation](https://github.com/vercel-labs/skills).
+
+**OpenCode** reads Agent Skills folders, so you can also install by hand. Put the whole `skills/watch/` folder (keep `SKILL.md` and `scripts/` together) at `~/.config/opencode/skills/watch/` for every project, or at `.opencode/skills/watch/` for one project. A symlink works too. Use a model that can read images: Watch hands the model frame files to look at, and a text-only model can run the script but can't see the video.
 
 ## Try your first video
 
